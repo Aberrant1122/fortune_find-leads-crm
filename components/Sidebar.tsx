@@ -14,6 +14,7 @@ import {
     X,
     UserPlus,
     Plus,
+    Calendar,
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -28,6 +29,7 @@ const navigationItems = [
     { name: 'Add Lead', href: '/add-lead', icon: UserPlus },
     { name: 'Tasks', href: '/tasks', icon: CheckSquare },
     { name: 'Add Task', href: '/create-task', icon: Plus },
+    { name: 'Calendar', href: '/calendar', icon: Calendar },
     { name: 'Analytics', href: '/analytics', icon: BarChart3 },
     { name: 'Settings', href: '/settings', icon: Settings },
 ];

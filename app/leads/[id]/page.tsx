@@ -17,8 +17,10 @@ import {
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
 import TaskStatusBadge from '@/components/TaskStatusBadge';
+import MeetingScheduler from '@/components/MeetingScheduler';
 import { getLeadDetails, sendWhatsAppMessage, LeadDetails } from '../../services/leadsService';
 import { getTasks, Task } from '../../services/tasksService';
+import { createCalendarMeeting } from '../../services/calendarService';
 
 export default function LeadDetailsPage() {
     const params = useParams();
@@ -39,6 +41,11 @@ export default function LeadDetailsPage() {
     // Tasks state
     const [tasks, setTasks] = useState<Task[]>([]);
     const [tasksLoading, setTasksLoading] = useState(true);
+
+    // Meeting scheduling state
+    const [isScheduling, setIsScheduling] = useState(false);
+    const [meetingError, setMeetingError] = useState<string | null>(null);
+    const [meetingLink, setMeetingLink] = useState<string | null>(null);
 
     // Fetch lead details and tasks
     useEffect(() => {
@@ -217,6 +224,60 @@ export default function LeadDetailsPage() {
                                             <span className="text-sm font-medium text-slate-900">{lead.source}</span>
                                         </div>
                                     </div>
+                                        
+                                        {/* Schedule Meeting */}
+                                        <div className="mt-6 pt-6 border-t border-slate-200">
+                                            <div className="flex items-center justify-between mb-3">
+                                                <h3 className="text-sm font-semibold text-slate-900 flex items-center">
+                                                    <Calendar className="h-4 w-4 mr-2" />
+                                                    Schedule Meeting
+                                                </h3>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setIsScheduling(prev => !prev)}
+                                                    className="text-xs font-medium text-indigo-600 hover:text-indigo-700"
+                                                >
+                                                    {isScheduling ? 'Close' : 'New Meeting'}
+                                                </button>
+                                            </div>
+
+                                            {meetingLink && (
+                                                <div className="mb-3 text-xs">
+                                                    <span className="font-medium text-slate-700">Last meeting link: </span>
+                                                    <a
+                                                        href={meetingLink}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-indigo-600 hover:text-indigo-700 break-all"
+                                                    >
+                                                        {meetingLink}
+                                                    </a>
+                                                </div>
+                                            )}
+
+                                            {meetingError && (
+                                                <div className="mb-3 bg-red-50 border border-red-200 rounded-lg p-2">
+                                                    <p className="text-xs text-red-600">{meetingError}</p>
+                                                </div>
+                                            )}
+
+                                            {isScheduling && (
+                                                <MeetingScheduler
+                                                    lead={lead}
+                                                    onMeetingCreated={(meetLink) => {
+                                                        setMeetingLink(meetLink);
+                                                        setIsScheduling(false);
+                                                        // Refresh lead details to show timeline update
+                                                        getLeadDetails(leadId).then(response => {
+                                                            setLead(response.lead);
+                                                        }).catch(console.error);
+                                                    }}
+                                                    onError={(error) => {
+                                                        setMeetingError(error);
+                                                    }}
+                                                />
+                                            )}
+                                        </div>
                                 </div>
 
                                 {/* Timeline */}
