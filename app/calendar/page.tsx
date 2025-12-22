@@ -292,7 +292,7 @@ export default function CalendarPage() {
         const sd = selectedDate;
         
         return (
-            <div className="grid grid-cols-7 gap-1">
+            <div className="grid grid-cols-7 text-black gap-1">
                 {/* Day headers */}
                 {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
                     <div key={day} className="p-2 text-center text-xs font-medium text-slate-500 bg-slate-50">
