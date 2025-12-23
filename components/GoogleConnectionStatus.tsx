@@ -39,13 +39,22 @@ export default function GoogleConnectionStatus({ onConnectionChange }: GoogleCon
     };
 
     const handleConnect = () => {
-        // Redirect to Google OAuth using full API URL with credentials
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+        // Get the access token from sessionStorage
+        const accessToken = sessionStorage.getItem('accessToken');
         
-        console.log('Connecting to Google OAuth:', `${apiUrl}/auth/google`);
+        if (!accessToken) {
+            setError('Please log in first to connect your Google account');
+            return;
+        }
+        
+        // Redirect to Google OAuth using full API URL with token as query parameter
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+        const oauthUrl = `${apiUrl}/auth/google?token=${encodeURIComponent(accessToken)}`;
+        
+        console.log('Connecting to Google OAuth:', oauthUrl);
         
         // For OAuth flow, we need to redirect directly to maintain session
-        window.location.href = `${apiUrl}/auth/google`;
+        window.location.href = oauthUrl;
     };
 
     const handleDisconnect = async () => {
