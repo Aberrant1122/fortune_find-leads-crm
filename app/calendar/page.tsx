@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 import Header from '@/components/Header';
+import GoogleConnectionStatus from '@/components/GoogleConnectionStatus';
 import { 
     CalendarDays, 
     Calendar as CalendarIcon, 
@@ -46,6 +47,7 @@ export default function CalendarPage() {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [selectedMeeting, setSelectedMeeting] = useState<CalendarMeeting | null>(null);
     const [isClient, setIsClient] = useState(false);
+    const [googleConnected, setGoogleConnected] = useState<boolean | null>(null);
 
     // Meeting creation state
     const [newMeeting, setNewMeeting] = useState({
@@ -67,6 +69,12 @@ export default function CalendarPage() {
     }, []);
 
     const fetchMeetings = async (date: Date) => {
+        // Don't fetch if Google is not connected
+        if (googleConnected === false) {
+            setMeetings([]);
+            return;
+        }
+
         try {
             setLoading(true);
             setError(null);
@@ -83,6 +91,12 @@ export default function CalendarPage() {
     };
 
     const fetchAllMeetings = async () => {
+        // Don't fetch if Google is not connected
+        if (googleConnected === false) {
+            setAllMeetings([]);
+            return;
+        }
+
         try {
             setLoading(true);
             setError(null);
@@ -121,16 +135,16 @@ export default function CalendarPage() {
     };
 
     useEffect(() => {
-        if (selectedDate) {
+        if (selectedDate && googleConnected === true) {
             fetchMeetings(selectedDate);
         }
-    }, [selectedDate]);
+    }, [selectedDate, googleConnected]);
 
     useEffect(() => {
-        if (currentDate) {
+        if (currentDate && googleConnected === true) {
             fetchAllMeetings();
         }
-    }, [currentDate]);
+    }, [currentDate, googleConnected]);
 
     // Initial load - removed since we now initialize dates in the first useEffect
 
@@ -353,6 +367,13 @@ export default function CalendarPage() {
                     <Header title="Calendar" onMenuClick={() => setSidebarOpen(true)} />
 
                     <main className="flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 p-6">
+                        {/* Google Connection Status */}
+                        <div className="mb-6">
+                            <GoogleConnectionStatus 
+                                onConnectionChange={(connected) => setGoogleConnected(connected)}
+                            />
+                        </div>
+
                         {!isClient || !currentDate || !selectedDate ? (
                             <div className="flex items-center justify-center py-12">
                                 <Loader2 className="h-8 w-8 animate-spin text-indigo-600 mr-2" />
