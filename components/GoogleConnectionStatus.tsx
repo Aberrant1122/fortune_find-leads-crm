@@ -15,7 +15,8 @@ export default function GoogleConnectionStatus({ onConnectionChange }: GoogleCon
     const checkConnectionStatus = async () => {
         try {
             setLoading(true);
-            const response = await fetch('/api/auth/google/status', {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const response = await fetch(`${apiUrl}/auth/google/status`, {
                 credentials: 'include'
             });
             
@@ -38,13 +39,19 @@ export default function GoogleConnectionStatus({ onConnectionChange }: GoogleCon
     };
 
     const handleConnect = () => {
-        // Redirect to Google OAuth
-        window.location.href = '/api/auth/google';
+        // Redirect to Google OAuth using full API URL with credentials
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+        
+        console.log('Connecting to Google OAuth:', `${apiUrl}/auth/google`);
+        
+        // For OAuth flow, we need to redirect directly to maintain session
+        window.location.href = `${apiUrl}/auth/google`;
     };
 
     const handleDisconnect = async () => {
         try {
-            const response = await fetch('/api/auth/google/disconnect', {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const response = await fetch(`${apiUrl}/auth/google/disconnect`, {
                 method: 'POST',
                 credentials: 'include'
             });
