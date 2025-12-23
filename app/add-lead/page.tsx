@@ -42,7 +42,7 @@ export default function AddLeadPage() {
         'Contacted',
         'Qualified',
         'Proposal',
-        'Negotiation',
+        'Second Wing',
         'Closed Won',
         'Closed Lost',
     ];

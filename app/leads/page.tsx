@@ -74,7 +74,7 @@ export default function LeadsPage() {
                                 <option value="Contacted">Contacted</option>
                                 <option value="Qualified">Qualified</option>
                                 <option value="Proposal">Second Wing</option>
-                                <option value="Negotiation">Negotiation</option>
+                                <option value="Second Wing">Second Wing</option>
                                 <option value="Won">Won</option>
                                 <option value="Lost">Lost</option>
                             </select>

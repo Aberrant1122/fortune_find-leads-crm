@@ -29,7 +29,7 @@ export function getStatusColor(status: string): string {
         'Contacted': 'blue',
         'Qualified': 'emerald',
         'Proposal': 'indigo',
-        'Negotiation': 'amber',
+        'Second Wing': 'amber',
         'Closed Won': 'green',
         'Closed Lost': 'rose',
     };
