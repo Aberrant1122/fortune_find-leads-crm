@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { CheckCircle, AlertCircle, ExternalLink, Loader2 } from 'lucide-react';
 
 interface GoogleConnectionStatusProps {
@@ -12,18 +12,22 @@ export default function GoogleConnectionStatus({ onConnectionChange }: GoogleCon
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const checkConnectionStatus = async () => {
+    const checkConnectionStatus = useCallback(async () => {
         try {
             setLoading(true);
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const accessToken = sessionStorage.getItem('accessToken') || '';
             const response = await fetch(`${apiUrl}/auth/google/status`, {
-                credentials: 'include'
+                headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined
             });
             
             if (response.ok) {
-                const data = await response.json();
-                setIsConnected(data.connected || false);
-                onConnectionChange?.(data.connected || false);
+                const body = await response.json();
+                const connected = (body && body.data && typeof body.data.connected === 'boolean')
+                    ? body.data.connected
+                    : (typeof body?.connected === 'boolean' ? body.connected : false);
+                setIsConnected(connected);
+                onConnectionChange?.(connected);
             } else {
                 setIsConnected(false);
                 onConnectionChange?.(false);
@@ -36,7 +40,7 @@ export default function GoogleConnectionStatus({ onConnectionChange }: GoogleCon
         } finally {
             setLoading(false);
         }
-    };
+    }, [onConnectionChange]);
 
     const handleConnect = () => {
         // Get the access token from sessionStorage
@@ -60,9 +64,10 @@ export default function GoogleConnectionStatus({ onConnectionChange }: GoogleCon
     const handleDisconnect = async () => {
         try {
             const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const accessToken = sessionStorage.getItem('accessToken') || '';
             const response = await fetch(`${apiUrl}/auth/google/disconnect`, {
                 method: 'POST',
-                credentials: 'include'
+                headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined
             });
             
             if (response.ok) {
@@ -79,7 +84,7 @@ export default function GoogleConnectionStatus({ onConnectionChange }: GoogleCon
 
     useEffect(() => {
         checkConnectionStatus();
-    }, []);
+    }, [checkConnectionStatus]);
 
     if (loading) {
         return (
