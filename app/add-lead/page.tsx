@@ -66,9 +66,7 @@ export default function AddLeadPage() {
             newErrors.name = 'Name is required';
         }
 
-        if (!formData.email.trim()) {
-            newErrors.email = 'Email is required';
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+        if (formData.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
             newErrors.email = 'Please enter a valid email address';
         }
 
@@ -247,7 +245,7 @@ export default function AddLeadPage() {
                                             htmlFor="email"
                                             className="block text-sm font-medium text-slate-700 mb-2"
                                         >
-                                            Email Address <span className="text-red-500">*</span>
+                                            Email Address
                                         </label>
                                         <div className="relative">
                                             <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
